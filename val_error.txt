@@ -1,0 +1,39 @@
+==19719== Memcheck, a memory error detector
+==19719== Copyright (C) 2002-2010, and GNU GPL'd, by Julian Seward et al.
+==19719== Using Valgrind-3.6.1 and LibVEX; rerun with -h for copyright info
+==19719== Command: ./HYM_SILO.exe /scratch/scratchdirs/jdhare/hym_coh/RunData_CoH/2012_08_29_1113/HYM_Data/ /scratch/scratchdirs/jdhare/hym_coh/RunData_CoH/2012_08_29_1113/SILO/ 1 10000
+==19719== Parent PID: 21530
+==19719== 
+==19719== Invalid read of size 4
+==19719==    at 0x413020: SILO_CycObj::SetFlags(bool *) (SILO_CycObj.cpp:55)
+==19719==    by 0x412DC7: SILO_CycObj::__ct(int, float **, int *, HYMDataObj **, bool *, char *) (SILO_CycObj.cpp:40)
+==19719==    by 0x405154: main (HYM_SILO.cpp:96)
+==19719==  Address 0x4 is not stack'd, malloc'd or (recently) free'd
+==19719== 
+==19719== 
+==19719== Process terminating with default action of signal 11 (SIGSEGV)
+==19719==  Access not within mapped region at address 0x4
+==19719==    at 0x413020: SILO_CycObj::SetFlags(bool *) (SILO_CycObj.cpp:55)
+==19719==    by 0x412DC7: SILO_CycObj::__ct(int, float **, int *, HYMDataObj **, bool *, char *) (SILO_CycObj.cpp:40)
+==19719==    by 0x405154: main (HYM_SILO.cpp:96)
+==19719==  If you believe this happened as a result of a stack
+==19719==  overflow in your program's main thread (unlikely but
+==19719==  possible), you can try to increase the size of the
+==19719==  main thread stack using the --main-stacksize= flag.
+==19719==  The main thread stack size used in this run was 8388608.
+==19719== 
+==19719== HEAP SUMMARY:
+==19719==     in use at exit: 55,822 bytes in 25 blocks
+==19719==   total heap usage: 32 allocs, 7 frees, 75,630 bytes allocated
+==19719== 
+==19719== LEAK SUMMARY:
+==19719==    definitely lost: 0 bytes in 0 blocks
+==19719==    indirectly lost: 0 bytes in 0 blocks
+==19719==      possibly lost: 0 bytes in 0 blocks
+==19719==    still reachable: 55,822 bytes in 25 blocks
+==19719==         suppressed: 0 bytes in 0 blocks
+==19719== Reachable blocks (those to which a pointer was found) are not shown.
+==19719== To see them, rerun with: --leak-check=full --show-reachable=yes
+==19719== 
+==19719== For counts of detected and suppressed errors, rerun with: -v
+==19719== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 2 from 2)
