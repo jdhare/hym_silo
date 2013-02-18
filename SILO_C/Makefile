@@ -1,4 +1,4 @@
-MPPL =      $(HOME)/Franklin/MPP/MPPL
+MPPL =      $(HOME)/hym/MPP/MPPL
 INFLAGS =   -r8 -o
 DBG1 =       -g -Mbounds -Minfo -v
 DBG_FLAGS =  $(DBG1) $(INFLAGS)
