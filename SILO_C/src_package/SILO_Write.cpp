@@ -33,7 +33,7 @@ void WriteMesh_SILO(DBfile *dbfile, char *mesh_name, int *dims,
     
     if(half_cyl){
     //set final phi co-ord to be pi, that is (pi-delta)+(delta)
-          s[Ns]=S[Ns-1]+(s[1]-s[0]);
+          s[Ns]=s[Ns-1]+(s[1]-s[0]);
     }
     cout << "s[]" <<endl;
     for(i=0;i<Ns+1;i++){
