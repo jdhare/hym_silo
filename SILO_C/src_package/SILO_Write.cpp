@@ -40,7 +40,8 @@ void WriteMesh_SILO(DBfile *dbfile, char *mesh_name, int *dims,
     cout << "s_ghost[Ns] before: " << s_ghost[Ns]<<endl;
     if(half_cyl){
     //set final phi co-ord to be pi, that is (pi-delta)+(delta)
-          s_ghost[Ns]=s[Ns];
+    //use Ns-1 here because AddGhostZones increments Ns by one if Nghost=0
+          s_ghost[Ns-1]=s[Ns-1];
     }
     cout << "s_ghost[Ns] after: " << s_ghost[Ns]<<endl;
     cout << "s[]" <<endl;
