@@ -31,7 +31,16 @@ void WriteMesh_SILO(DBfile *dbfile, char *mesh_name, int *dims,
     float *q = mesh_coords[0], *r = mesh_coords[1], *s = mesh_coords[2];
     float *s_ghost = NULL;
     
+    for(i=0;i<Ns;i++){
+          cout << s << endl;
+    }
+
+    
     AddGhostZones_Coord(s,s_ghost,Ns);
+    
+    for(i=0;i<Ns;i++){
+          cout << s_ghost << endl;
+    }    
     
     Ntot = Nq*Nr*Ns;
     
