@@ -32,6 +32,7 @@ using namespace std;
 const int ndims = 3;  // Number of dimensions
 const int nvars = 5;  // Number of variables (p,n,B,v,J,...)
 const int Nghost = 0; // Number of SILO ghost zones added on each end (in phi)
+const int exclude_origin=0; //Whether to interpolate vectors around r=0 or not. If r=0 not part of domain, then =0
 
 const float pi = 4.0*atan(1.0); // Natural constant
 
