@@ -37,6 +37,12 @@ void WriteMesh_SILO(DBfile *dbfile, char *mesh_name, int *dims,
     }
     
     AddGhostZones_Coord(s,s_ghost,Ns);
+        
+    if(half_cyl){
+    //set final phi co-ord to be pi, that is (pi-delta)+(delta)
+          s_ghost[Ns]=s[Ns];
+          s_ghost[Ns+1]=s[Ns];
+    }
     
     cout << "s[]" <<endl;
     for(i=0;i<Ns+1;i++){
@@ -46,7 +52,7 @@ void WriteMesh_SILO(DBfile *dbfile, char *mesh_name, int *dims,
     for(i=0;i<Ns+1;i++){
           cout << s_ghost[i] << endl;
     }  
-    
+
     
     Ntot = Nq*Nr*Ns;
     
