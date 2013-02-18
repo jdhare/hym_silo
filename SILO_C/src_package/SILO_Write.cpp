@@ -188,21 +188,23 @@ void Cyl_to_Cart(float **vec, float *s, int *dims) {
             }
         }
     }
-    
-    // Interpolate on axis at r=0
-    for(i=0; i<Nq; i++) {
-        int nsum=0;
-        float vec_x_sum=0., vec_y_sum=0.;
-        for(k=Nghost; k<(Ns-Nghost-1); k++) {
-            n = fn(i,1,k,Nq,Nr);
-            vec_x_sum += vec_x[n];
-            vec_y_sum += vec_y[n];
-            nsum++;
-        }
-        for(k=0; k<Ns; k++) {
-            n = fn(i,0,k,Nq,Nr); 
-            vec_x[n] = vec_x_sum/nsum;
-            vec_y[n] = vec_y_sum/nsum;
+    //set exclude origin in HYM_SILO.hpp
+    if(exclude_origin){
+        // Interpolate on axis at r=0
+        for(i=0; i<Nq; i++) {
+            int nsum=0;
+            float vec_x_sum=0., vec_y_sum=0.;
+            for(k=Nghost; k<(Ns-Nghost-1); k++) {
+                n = fn(i,1,k,Nq,Nr);
+                vec_x_sum += vec_x[n];
+                vec_y_sum += vec_y[n];
+                nsum++;
+            }
+            for(k=0; k<Ns; k++) {
+                n = fn(i,0,k,Nq,Nr); 
+                vec_x[n] = vec_x_sum/nsum;
+                vec_y[n] = vec_y_sum/nsum;
+            }
         }
     }
     
