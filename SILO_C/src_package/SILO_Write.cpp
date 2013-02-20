@@ -31,29 +31,20 @@ void WriteMesh_SILO(DBfile *dbfile, char *mesh_name, int *dims,
     float *q = mesh_coords[0], *r = mesh_coords[1], *s = mesh_coords[2];
     float *s_ghost = NULL;
     
+    //half_cyl defined in HYM_SILO.hpp and is a bit of an ugly hack
     if(half_cyl){
     //set final phi co-ord to be pi, that is (pi-delta)+(delta)
-          s[Ns]=s[Ns-1]+(s[1]-s[0]);
+          s[Ns]=s[Ns-1];
     }
     
     AddGhostZones_Coord(s,s_ghost,Ns);
-    cout << "s_ghost[Ns] before: " << s_ghost[Ns]<<endl;
+    
     if(half_cyl){
     //set final phi co-ord to be pi, that is (pi-delta)+(delta)
     //use Ns-1 here because AddGhostZones increments Ns by one if Nghost=0
           s_ghost[Ns-1]=s[Ns-1];
     }
-    cout << "s_ghost[Ns] after: " << s_ghost[Ns]<<endl;
-    cout << "s[]" <<endl;
-    for(i=0;i<Ns+1;i++){
-          cout << s[i] << endl;
-    }
-    cout << "s_ghost[]" <<endl;
-    for(i=0;i<Ns+1;i++){
-          cout << s_ghost[i] << endl;
-    }  
 
-    
     Ntot = Nq*Nr*Ns;
     
     float *xg=NULL, *yg=NULL, *zg=NULL;
