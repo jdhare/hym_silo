@@ -32,18 +32,10 @@ void WriteMesh_SILO(DBfile *dbfile, char *mesh_name, int *dims,
     float *s_ghost = NULL;
     
     AddGhostZones_Coord(s,s_ghost,Ns);
-    s_ghost[Ns-1]=s_ghost[Ns-2]+(s_ghost[1]);
-    
-    cout <<"s[]"<<endl;
-    for(i=0;i<Ns;i++){
-         cout<< s[i]<<endl;
+    //nasty hack for half cyl case that ensure the mesh stretches to pi.
+    if(half_cyl){
+         s_ghost[Ns-1]=s_ghost[Ns-2]+(s_ghost[1]);
     }
-  
-    cout <<"s[]"<<endl;
-    for(i=0;i<Ns+1;i++){
-         cout<< s_ghost[i]<<endl;
-    }
-    
     Ntot = Nq*Nr*Ns;
     
     float *xg=NULL, *yg=NULL, *zg=NULL;
@@ -71,7 +63,7 @@ void WriteMesh_SILO(DBfile *dbfile, char *mesh_name, int *dims,
     
     // Create an option list to save cycle and time values:
     int offset_low[ndims] = {0,0,Nghost};
-    int offset_high[ndims] = {0,0,Nghost};
+    int offset_high[ndims] = {0,0,Nghost+1};
     DBoptlist *optlist = DBMakeOptlist(4);
     DBAddOption(optlist, DBOPT_DTIME, &time);
     DBAddOption(optlist, DBOPT_CYCLE, &cycle);
