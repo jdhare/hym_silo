@@ -31,7 +31,7 @@ using namespace std;
 // Basic constants:
 const int ndims = 3;  // Number of dimensions
 const int nvars = 5;  // Number of variables (p,n,B,v,J,...)
-const int Nghost = 0; // Number of SILO ghost zones added on each end (in phi)
+const int Nghost = 1; // Number of SILO ghost zones added on each end (in phi)
 const int exclude_origin=0; //Whether to interpolate vectors around r=0 or not. If r=0 not part of domain, then =0
 const int half_cyl=1; //whether to relabel the final s co-ord as pi in a half cylindrical geometry
 
