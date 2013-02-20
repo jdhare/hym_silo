@@ -31,10 +31,19 @@ void WriteMesh_SILO(DBfile *dbfile, char *mesh_name, int *dims,
     float *q = mesh_coords[0], *r = mesh_coords[1], *s = mesh_coords[2];
     float *s_ghost = NULL;
     
-    AddGhostZones_Coord(s,s_ghost,Ns);
-    //nasty hack for half cyl case that ensure the mesh stretches to pi.
+
+    //if halfcyl, just extend array. else ie. periodic, add ghost zones/
     if(half_cyl){
-         //s_ghost[Ns-1]=s_ghost[Ns-2]+(s_ghost[1]);
+         Ns+=1;
+         s_ghost=new float[Ns];
+         //copy array across into new slightly alrger array
+         for(k=0;k<Ns-1;k++){
+                    s_ghost[k]=s[k]
+         }
+         //add final phi=pi point
+         s_ghost[Ns-1]=s_ghost[Ns-2]+s_ghost[1]
+    }else{
+         AddGhostZones_Coord(s,s_ghost,Ns);               
     }
     Ntot = Nq*Nr*Ns;
     
@@ -62,13 +71,16 @@ void WriteMesh_SILO(DBfile *dbfile, char *mesh_name, int *dims,
     float *coords[ndims] = {(float*)xg, (float*)yg, (float*)zg};
     
     // Create an option list to save cycle and time values:
-    int offset_low[ndims] = {0,0,Nghost};
-    int offset_high[ndims] = {0,0,Nghost};
     DBoptlist *optlist = DBMakeOptlist(4);
+    if(!half_cyl){
+          int offset_low[ndims] = {0,0,Nghost};
+          int offset_high[ndims] = {0,0,Nghost};
+          DBAddOption(optlist, DBOPT_LO_OFFSET, offset_low);
+          DBAddOption(optlist, DBOPT_HI_OFFSET, offset_high);                  
+    }
     DBAddOption(optlist, DBOPT_DTIME, &time);
     DBAddOption(optlist, DBOPT_CYCLE, &cycle);
-    DBAddOption(optlist, DBOPT_LO_OFFSET, offset_low);
-    DBAddOption(optlist, DBOPT_HI_OFFSET, offset_high);
+
     // DBAddOption(optlist, DBOPT_COORDSYS, DB_CYLINDRICAL);
 
     // Write the mesh to the .silo file:
