@@ -38,10 +38,10 @@ void WriteMesh_SILO(DBfile *dbfile, char *mesh_name, int *dims,
          s_ghost=new float[Ns];
          //copy array across into new slightly alrger array
          for(k=0;k<Ns-1;k++){
-                    s_ghost[k]=s[k]
+                    s_ghost[k]=s[k];
          }
          //add final phi=pi point
-         s_ghost[Ns-1]=s_ghost[Ns-2]+s_ghost[1]
+         s_ghost[Ns-1]=s_ghost[Ns-2]+s_ghost[1];
     }else{
          AddGhostZones_Coord(s,s_ghost,Ns);               
     }
@@ -101,8 +101,12 @@ void WriteScalar_SILO(DBfile *dbfile, char *vname, char *mesh_name, float *var,
     // This function writes the data in var to the .silo database file
     int silodims[ndims] = {dims[0],dims[1],dims[2]+2*Nghost+1};
     float *silovar;
-    // Add the SILO ghost zones to the data:
-    AddGhostZones_Var(var,silovar,dims);
+    if(halfcyl){
+          AddFinalZone_Var(var,silovar,dims);              
+    }else{
+          // Add the SILO ghost zones to the data:
+          AddGhostZones_Var(var,silovar,dims);
+    }
     // Remove nonzero elements below a threshold (e.g. 1e-10):
     Set_Zeros(silovar,silodims[0]*silodims[1]*silodims[2]);
     // Write the data to the .silo file:
@@ -118,10 +122,16 @@ void WriteVector_SILO(DBfile *dbfile, char *vname, char *mesh_name,
     int Ntot;
     int silodims[ndims] = {dims[0],dims[1],dims[2]+2*Nghost+1};
     float *silovec[ndims];
-    // Add the SILO ghost zones to the data:
-    AddGhostZones_Var(vec[0],silovec[0],dims);
-    AddGhostZones_Var(vec[1],silovec[1],dims);
-    AddGhostZones_Var(vec[2],silovec[2],dims);
+    if(halfcyl){
+        AddFinalZone_Var(vec[0],silovec[0],dims);
+        AddFinalZone_Var(vec[1],silovec[1],dims);  
+        AddFinalZone_Var(vec[2],silovec[2],dims);  
+    }else
+        // Add the SILO ghost zones to the data:
+        AddGhostZones_Var(vec[0],silovec[0],dims);
+        AddGhostZones_Var(vec[1],silovec[1],dims);
+        AddGhostZones_Var(vec[2],silovec[2],dims);
+    }
     // Convert to Cartesian vector components:
     Cyl_to_Cart(silovec,s,dims);
     // Remove nonzero elements below a threshold (e.g. 1e-10):
@@ -155,6 +165,32 @@ void AddGhostZones_Coord(float *s, float *&s_ghost, int &Ns) {
 
 //============================================================================//
 void AddGhostZones_Var(float *var, float *&silovar, int *dims) {
+    // Add the SILO ghost zones (in phi) to the variable
+    int nshift, Ntot, n;
+    int Nq = dims[0], Nr = dims[1], Ns = dims[2] + 2*Nghost + 1;
+    
+    Ntot = Nq*Nr*Ns;
+    silovar = new float[Ntot];
+    nshift = Ntot - (2*Nghost+1)*Nq*Nr;
+    n = Nghost*Nq*Nr;
+    for(int k=Nghost; k<(Ns-Nghost-1); k++) {
+        for(int j=0; j<Nr; j++) {
+            for(int i=0; i<Nq; i++) {
+                silovar[n] = var[n-Nghost*Nq*Nr]; 
+                // Continuous periodicity/ghost zones at top of mesh:
+                if(k < (2*Nghost+1))
+                    silovar[n+nshift] = silovar[n];
+                // Ghost zones at the bottom of the mesh:
+                if(k >= (Ns-(2*Nghost+1)))
+                    silovar[n-nshift] = silovar[n];
+                n++;                
+            }
+        }
+    }
+}
+
+//============================================================================//
+void AddFinalZone_Var(float *var, float *&silovar, int *dims) {
     // Add the SILO ghost zones (in phi) to the variable
     int nshift, Ntot, n;
     int Nq = dims[0], Nr = dims[1], Ns = dims[2] + 2*Nghost + 1;
