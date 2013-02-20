@@ -32,7 +32,7 @@ void WriteMesh_SILO(DBfile *dbfile, char *mesh_name, int *dims,
     float *s_ghost = NULL;
     
     AddGhostZones_Coord(s,s_ghost,Ns);
-    s_ghost[Ns]=s_ghost[Ns-1]+(s_ghost[1])
+    s_ghost[Ns]=s_ghost[Ns-1]+(s_ghost[1]);
     
     cout <<"s[]"<<endl;
     for(i=0;i<Ns;i++){
