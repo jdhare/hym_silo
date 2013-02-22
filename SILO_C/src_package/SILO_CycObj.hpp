@@ -22,7 +22,8 @@ class SILO_CycObj {
         bool mask_flags[nvars];  // Mask array for writing each data member
         
     protected:
-        int *dims;               // Dimensions of mesh for SILO output
+        int *dims;               // Dimensions of mesh from HYM
+        int *silodims;           // Dimensions of mesh for SILO
         float **mesh_coords;     // Coordinates of the HYM mesh
         char *stopmsg;           // Customizable error message
         HYMDataObj **data_objs;  // Vector of HYM data objects
