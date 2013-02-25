@@ -6,7 +6,7 @@ SILO_CycleObj.cpp
 Created:  06 February 2010
 Modified: 06 February 2010
 
-Class for SILO cycle objects.
+Class for SILO cycle objects..
                       
 */
 //============================================================================//
