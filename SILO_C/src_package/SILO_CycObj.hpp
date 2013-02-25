@@ -22,9 +22,8 @@ class SILO_CycObj {
         bool mask_flags[nvars];  // Mask array for writing each data member
         
     protected:
-        int *dims;               // Dimensions of mesh from HYM
         int *silodims;           // Dimensions of mesh for SILO
-        float **mesh_coords;     // Coordinates of the HYM mesh
+        float **silo_mesh;     // Coordinates of the HYM mesh
         char *stopmsg;           // Customizable error message
         HYMDataObj **data_objs;  // Vector of HYM data objects
 
@@ -39,6 +38,13 @@ class SILO_CycObj {
         static bool CompareMeshDims(int*,int*,char*,char*);
         void SetFlags(bool*);
         void SetTime(void);
+        void WriteMesh_SILO(DBfile*,char*,int*,float**,int,double);
+        void WriteScalar_SILO(DBfile*,char*,char*,float*,int*);
+        void WriteVector_SILO(DBfile*,char*,char*,char**,float**,float*,int*);
+        void AddGhostZones_Coord(float*,float*&,int&);
+        void AddGhostZones_Var(float*,float*&,int*);
+        void Cyl_to_Cart(float**,float*,int*);
+        void Set_Zeros(float*,int);
 };
 
 //============================================================================//
