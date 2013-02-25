@@ -38,6 +38,8 @@ class SILO_CycObj {
         static bool CompareMeshDims(int*,int*,char*,char*);
         void SetFlags(bool*);
         void SetTime(void);
+        void Modify_mesh_half_cyl(int*,float**);
+        void Modify_mesh_full_cyl(int*,float**);
         void WriteMesh_SILO(DBfile*,char*,int*,float**,int,double);
         void WriteScalar_SILO(DBfile*,char*,char*,float*,int*);
         void WriteVector_SILO(DBfile*,char*,char*,char**,float**,float*,int*);
