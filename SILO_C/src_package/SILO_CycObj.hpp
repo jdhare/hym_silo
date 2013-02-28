@@ -40,14 +40,14 @@ class SILO_CycObj {
         void SetTime(void);
         void AddFinalZone(int*, float**);
         void AddGhostZones(int*,float**);
-        void WriteMesh_SILO(DBfile*,char*,int*,float**,int,double);
-        void WriteScalar_SILO(DBfile*,char*,char*,float*,int*);
-        void WriteVector_SILO(DBfile*,char*,char*,char**,float**,float*,int*);
+        void WriteMesh_SILO(DBfile*,char*);
+        void WriteScalar_SILO(DBfile*,char*,char*,float*);
+        void WriteVector_SILO(DBfile*,char*,char*,char**,float**);
         void WriteData_SILO(HYMScalarObj*);
         void WriteData_SILO(HYMVectorObj*);
-        void AddGhostZones_Var(float*,float*&,int*);
-        void AddFinalZone_Var(float*,float*&,int*);
-        void Cyl_to_Cart(float**,float*,int*);
+        void AddGhostZones_Var(float*,float*&);
+        void AddFinalZone_Var(float*,float*&);
+        void Cyl_to_Cart(float**,float*);
         void Set_Zeros(float*,int);
 };
 

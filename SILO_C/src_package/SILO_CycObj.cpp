@@ -106,10 +106,10 @@ void SILO_CycObj::AddFinalZone(int *dims, float **mesh_coords){
     this->silo_mesh[0]=mesh_coords[0];
     this->silo_mesh[1]=mesh_coords[1];
     //add the final mesh coordinate in phi
-    this->silo_mesh[2]=new float*[silodims[2]];
+    this->silo_mesh[2]=new float[silodims[2]];
     for(int k=0; k<silodims[2]; k++){
         //very explicit - make the last coord one increment greater than the previous coord
-        if(k==(silodims-1)){
+        if(k==(silodims[2]-1)){
             silo_mesh[2][k]=mesh_coords[2][k-1]+(mesh_coords[2][1]-mesh_coords[2][0]);
         }else{
             silo_mesh[2][k]=mesh_coords[2][k];
@@ -125,7 +125,7 @@ void SILO_CycObj::AddGhostZones(int *dims, float **mesh_coords){
     this->silo_mesh[0]=mesh_coords[0];
     this->silo_mesh[1]=mesh_coords[1];
     //add the final mesh coordinate in phi
-    this->silo_mesh[2]=new float*[silodims[2]];
+    this->silo_mesh[2]=new float[silodims[2]];
     int kshift = silodims[2] - (2*Nghost+1);
     for(int k=Nghost;k<silodims[2]-Nghost-1;k++){
         silo_mesh[2][k]=mesh_coords[2][k];
@@ -164,7 +164,7 @@ void SILO_CycObj::Write_SILO(char *silo_path) {
     cout << "      Output:  " << full_name << "\n";    
 }
 //============================================================================//     
-SILO_CycObj::WriteData_SILO(HYMVectorObj* data_obj, DBfile* dbfile){
+void SILO_CycObj::WriteData_SILO(HYMVectorObj* data_obj, DBfile* dbfile){
     float *vec[ndims];
     data_obj->ReadVector_Binary(this->cycle,vec);
     this->WriteVector_SILO(dbfile, data_obj->varname, *mesh_name, 
@@ -173,7 +173,7 @@ SILO_CycObj::WriteData_SILO(HYMVectorObj* data_obj, DBfile* dbfile){
         delete [] vec[m];
 }
 //============================================================================//     
-SILO_CycObj::WriteData_SILO(HYMScalarObj* data_obj, DBfile* dbfile){
+void SILO_CycObj::WriteData_SILO(HYMScalarObj* data_obj, DBfile* dbfile){
     float *var;
     data_obj->ReadScalar_Binary(this->cycle,var);
     this->WriteScalar_SILO(dbfile,data_obj->varname,*mesh_name,var);
@@ -279,7 +279,7 @@ void SILO_CycObj::WriteVector_SILO(DBfile *dbfile, char *vname, char *mesh_name,
         this->AddGhostZones_Var(vec[2],silovec[2]);
     }
     // Convert to Cartesian vector components:
-    this->Cyl_to_Cart(silovec,silo_mesh[2],silodims);
+    this->Cyl_to_Cart(silovec);
     // Remove nonzero elements below a threshold (e.g. 1e-10):
     Ntot = silodims[0]*silodims[1]*silodims[2];
     this->Set_Zeros(silovec[0],Ntot);
@@ -341,10 +341,10 @@ void SILO_CycObj::AddFinalZone_Var(float *var, float *&silovar) {
 }
 
 //============================================================================//
-void SILO_CycObj::Cyl_to_Cart(float **vec, float *s, int *dims) {
+void SILO_CycObj::Cyl_to_Cart(float **vec) {
     // Add functionality comment here
     int i, j, k, n, Ntot;
-    int Nq = dims[0], Nr = dims[1], Ns = dims[2];
+    int Nq = silodims[0], Nr = silodims[1], Ns = silodims[2];
     float *vec_q = vec[0], *vec_r = vec[1], *vec_s = vec[2];
     float *vec_x=NULL, *vec_y=NULL, *s_ghost=NULL;
     
@@ -357,8 +357,8 @@ void SILO_CycObj::Cyl_to_Cart(float **vec, float *s, int *dims) {
     for(k=0; k<Ns; k++) {
         for(j=0; j<Nr; j++) {
             for(i=0; i<Nq; i++) {
-                vec_x[n] = vec_r[n]*cos(s[k]) - vec_s[n]*sin(s[k]);
-                vec_y[n] = vec_r[n]*sin(s[k]) + vec_s[n]*cos(s[k]);
+                vec_x[n] = vec_r[n]*cos(silodims[2][k]) - vec_s[n]*sin(silodims[2][k]);
+                vec_y[n] = vec_r[n]*sin(silodims[2][k]) + vec_s[n]*cos(silodims[2][k]);
                 n++;
             }
         }
@@ -384,7 +384,7 @@ void SILO_CycObj::Cyl_to_Cart(float **vec, float *s, int *dims) {
     }
     
     // Replace and sort the vector components into the (x,y,z) arrangement
-    delete [] vec_r; delete [] vec_s; delete [] s_ghost;
+    delete [] vec_r; delete [] vec_s;
     vec[0] = vec_x;
     vec[1] = vec_y;
     vec[2] = vec_q;
