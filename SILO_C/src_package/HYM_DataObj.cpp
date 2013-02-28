@@ -310,7 +310,7 @@ HYMScalarObj::HYMScalarObj(char vchar, char* data_path, char * fname_src,
 }
 
 //============================================================================//
- void HYMScalarObj::GetData_SILO(int cycle, float* var){
+ void HYMScalarObj::GetData_SILO(int cycle, float *&var){
      this->ReadScalar_Binary(cycle, var);
  }
 //These functions used to be used to write silo databases from inside the HYM data object.
@@ -381,7 +381,7 @@ HYMVectorObj::HYMVectorObj(char vchar, char* data_path, char * fname_src,
 }
 
 //============================================================================//
- void HYMVectorObj::GetData_SILO(int cycle, float** vecs){
+ void HYMVectorObj::GetData_SILO(int cycle, float **&vecs){
      this->ReadVector_Binary(cycle, vecs);
  }
 //============================================================================//
