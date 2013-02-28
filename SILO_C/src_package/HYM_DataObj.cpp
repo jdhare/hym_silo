@@ -14,7 +14,6 @@ Class for HYM scalar and vector data objects.
 
 #include <HYM_SILO.hpp>
 #include <HYM_DataObj.hpp>
-#include <SILO_Write.hpp>
 #include <ASCII_Write.hpp>
 
 //============================================================================//
