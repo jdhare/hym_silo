@@ -5,6 +5,7 @@ Clayton Myers
 SILO_CycleObj.cpp
 Created:  06 February 2010
 Modified: 06 February 2010
+ * Modified: 28 February 2012. Rewrite to include Silo_write functions
 
 Class for SILO cycle objects.
                       
