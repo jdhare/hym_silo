@@ -17,6 +17,7 @@ class HYMDataObj {
         int Ncyc;            // Number of cycles in the source data
         bool *cycle_mask;    // Mask of cycles where the data exists
         double *times;       // Vector with the simulation time for each cycle
+        char *varname;       // String name of variable (for SILO/VisIt)
 
     protected:
         ifstream file;       // Source file object
@@ -30,7 +31,6 @@ class HYMDataObj {
         int Ntot_in;         // Product of dims_in elements
         long record_length;  // Binary record length for this data type
         char *stopmsg;       // Customizable error message
-        char *varname;       // String name of variable (for SILO/VisIt)
         char *ascii_name;    // String prefix of output ASCII file (if written)
 
     public:
@@ -56,22 +56,18 @@ class HYMScalarObj : public HYMDataObj {
         HYMScalarObj(char,char*,char*,int*,char*);
         void WriteData_SILO(DBfile*,int,char*,float**);
         void WriteData_ASCII(char*,int,double,float**);
-        
-    protected:
         void ReadScalar_Binary(int,float*&);
 };
 
 //============================================================================//
 class HYMVectorObj : public HYMDataObj {
-    protected:
+    public:
         char *varnames[ndims];
 
     public:
         HYMVectorObj(char,char*,char*,int*,char*);
         void WriteData_SILO(DBfile*,int,char*,float**);
         void WriteData_ASCII(char*,int,double,float**);
-        
-    protected:
         void ReadVector_Binary(int,float**);
 };
 

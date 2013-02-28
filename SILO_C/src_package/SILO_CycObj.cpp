@@ -15,7 +15,6 @@ Class for SILO cycle objects.
 
 #include <HYM_SILO.hpp>
 #include <HYM_DataObj.hpp>
-#include <SILO_Write.hpp>
 #include <SILO_CycObj.hpp>
 
 //============================================================================//
@@ -157,16 +156,29 @@ void SILO_CycObj::Write_SILO(char *silo_path) {
     // Write the data to the .silo database:
     for(int m=0; m<nvars; m++) {
         if(this->mask_flags[m]) {
-            this->data_objs[m]->Get
-            WriteData_SILO(dbfile,this->cycle,mesh_name,this->mesh_coords);
+            this->WriteData_SILO(this->data_objs[m], dbfile);
         }
     }
     // Close the completed .silo database:
     DBClose(dbfile);
     cout << "      Output:  " << full_name << "\n";    
 }
-     
-
+//============================================================================//     
+SILO_CycObj::WriteData_SILO(HYMVectorObj* data_obj, DBfile* dbfile){
+    float *vec[ndims];
+    data_obj->ReadVector_Binary(this->cycle,vec);
+    this->WriteVector_SILO(dbfile, data_obj->varname, *mesh_name, 
+                      data_obj->varnames, vec);
+    for(int m=0; m<ndims; m++)
+        delete [] vec[m];
+}
+//============================================================================//     
+SILO_CycObj::WriteData_SILO(HYMScalarObj* data_obj, DBfile* dbfile){
+    float *var;
+    data_obj->ReadScalar_Binary(this->cycle,var);
+    this->WriteScalar_SILO(dbfile,data_obj->varname,*mesh_name,var);
+    delete [] var;
+}
 //============================================================================//
 void SILO_CycObj::Write_ASCII(char *ascii_path) {
     VerifyPath(ascii_path,stopmsg);
@@ -236,7 +248,7 @@ void SILO_CycObj::WriteMesh_SILO(DBfile *dbfile, char *mesh_name) {
 void SILO_CycObj::WriteScalar_SILO(DBfile *dbfile, char *vname, char *mesh_name, float *var){
     // This function writes the data in var to the .silo database file
     float *silovar;
-    if(halfcyl){
+    if(half_cyl){
           this->AddFinalZone_Var(var,silovar);              
     }else{
           // Add the SILO ghost zones to the data:
