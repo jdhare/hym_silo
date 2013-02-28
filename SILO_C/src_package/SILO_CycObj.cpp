@@ -152,7 +152,7 @@ void SILO_CycObj::Write_SILO(char *silo_path) {
     // Open the .silo database file:
     DBfile *dbfile = DBCreate(full_name,DB_CLOBBER,DB_LOCAL,"data",DB_PDB);   
     // Write the mesh to the .silo database:
-    this->WriteMesh_SILO(dbfile,mesh_name);    
+    this->WriteMesh_SILO(dbfile);    
     // Write the data to the .silo database:
     for(int m=0; m<nvars; m++) {
         if(this->mask_flags[m]) {
@@ -167,7 +167,7 @@ void SILO_CycObj::Write_SILO(char *silo_path) {
 void SILO_CycObj::WriteData_SILO(HYMVectorObj* data_obj, DBfile* dbfile){
     float *vec[ndims];
     data_obj->ReadVector_Binary(this->cycle,vec);
-    this->WriteVector_SILO(dbfile, data_obj->varname, *mesh_name, 
+    this->WriteVector_SILO(dbfile, data_obj->varname,
                       data_obj->varnames, vec);
     for(int m=0; m<ndims; m++)
         delete [] vec[m];
@@ -176,22 +176,22 @@ void SILO_CycObj::WriteData_SILO(HYMVectorObj* data_obj, DBfile* dbfile){
 void SILO_CycObj::WriteData_SILO(HYMScalarObj* data_obj, DBfile* dbfile){
     float *var;
     data_obj->ReadScalar_Binary(this->cycle,var);
-    this->WriteScalar_SILO(dbfile,data_obj->varname,*mesh_name,var);
+    this->WriteScalar_SILO(dbfile,data_obj->varname,var);
     delete [] var;
 }
 //============================================================================//
-void SILO_CycObj::Write_ASCII(char *ascii_path) {
+void SILO_CycObj::Write_ASCII(char *ascii_path, float **mesh_coords) {
     VerifyPath(ascii_path,stopmsg);
     for(int m=0; m<nvars; m++) {
         if(this-mask_flags[m]) {
             this->data_objs[m]->WriteData_ASCII(ascii_path,this->cycle,
-                                                this->time,this->mesh_coords);
+                                                this->time,*mesh_coords);
         }
     }                 
 }
 
 //============================================================================//
-void SILO_CycObj::WriteMesh_SILO(DBfile *dbfile, char *mesh_name) {
+void SILO_CycObj::WriteMesh_SILO(DBfile *dbfile) {
     int i, j, k, n, Ntot;
     int Nq = silodims[0], Nr = silodims[1], Ns = silodims[2];
     float *q = silo_mesh[0], *r = silo_mesh[1], *s = silo_mesh[2];
@@ -245,7 +245,7 @@ void SILO_CycObj::WriteMesh_SILO(DBfile *dbfile, char *mesh_name) {
 }
 
 //============================================================================//
-void SILO_CycObj::WriteScalar_SILO(DBfile *dbfile, char *vname, char *mesh_name, float *var){
+void SILO_CycObj::WriteScalar_SILO(DBfile *dbfile, char *vname, float *var){
     // This function writes the data in var to the .silo database file
     float *silovar;
     if(half_cyl){
@@ -263,7 +263,7 @@ void SILO_CycObj::WriteScalar_SILO(DBfile *dbfile, char *vname, char *mesh_name,
 }
 
 //============================================================================//
-void SILO_CycObj::WriteVector_SILO(DBfile *dbfile, char *vname, char *mesh_name, 
+void SILO_CycObj::WriteVector_SILO(DBfile *dbfile, char *vname, 
                       char **varnames, float **vec) {
     // This function writes the data in vec to the .silo database file
     int Ntot;
@@ -295,7 +295,7 @@ void SILO_CycObj::WriteVector_SILO(DBfile *dbfile, char *vname, char *mesh_name,
 void SILO_CycObj::AddGhostZones_Var(float *var, float *&silovar) {
     // Add the SILO ghost zones (in phi) to the variable
     int nshift, Ntot, n;
-    int Nq = silodims[0], Nr = silodims[1], Ns = silodims[2]
+    int Nq = silodims[0], Nr = silodims[1], Ns = silodims[2];
    
     Ntot = Nq*Nr*Ns;
     silovar = new float[Ntot];
@@ -346,7 +346,7 @@ void SILO_CycObj::Cyl_to_Cart(float **vec) {
     int i, j, k, n, Ntot;
     int Nq = silodims[0], Nr = silodims[1], Ns = silodims[2];
     float *vec_q = vec[0], *vec_r = vec[1], *vec_s = vec[2];
-    float *vec_x=NULL, *vec_y=NULL, *s_ghost=NULL;
+    float *vec_x=NULL, *vec_y=NULL;
     
     Ntot = Nq*Nr*Ns;
     vec_x = new float[Ntot];
@@ -357,8 +357,8 @@ void SILO_CycObj::Cyl_to_Cart(float **vec) {
     for(k=0; k<Ns; k++) {
         for(j=0; j<Nr; j++) {
             for(i=0; i<Nq; i++) {
-                vec_x[n] = vec_r[n]*cos(silodims[2][k]) - vec_s[n]*sin(silodims[2][k]);
-                vec_y[n] = vec_r[n]*sin(silodims[2][k]) + vec_s[n]*cos(silodims[2][k]);
+                vec_x[n] = vec_r[n]*cos(silo_mesh[2][k]) - vec_s[n]*sin(silo_mesh[2][k]);
+                vec_y[n] = vec_r[n]*sin(silo_mesh[2][k]) + vec_s[n]*cos(silo_mesh[2][k]);
                 n++;
             }
         }
