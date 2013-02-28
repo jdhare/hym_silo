@@ -23,6 +23,7 @@ Class for SILO cycle objects.
 
 char *silo_name = "HYM";
 char *mesh_name = "HYM_mesh";
+const float zero_threshold = 1.0E-7; // For the Set_Zero function
 
 //============================================================================//
 //============================================================================//
@@ -30,17 +31,21 @@ SILO_CycObj::SILO_CycObj(int cycle, float **mesh_coords, int *dims,
                          HYMDataObj **data_objs, bool *glob_data_flags, 
                          char *stopmsg) {
     this->cycle = cycle;
-    this->mesh_coords = mesh_coords;
-    this->dims = dims;
     this->data_objs = data_objs;
     this->stopmsg=stopmsg;
+    this->silo_mesh=new float*[3];
     
     this->time_str=NULL;
     this->stat_str="Clean";
     
     this->SetFlags(glob_data_flags);
-    this->SetTime();    
-}
+    this->SetTime();
+    //half_cyl defined in HYM_SILO.hpp - at the moment, we either half a half cylinder or a full, periodic cylinder
+    if(half_cyl){
+        this->AddFinalZone(dims, mesh_coords);
+    }else{
+        this->AddGhostZones(dims, mesh_coords);
+    }
 
 //============================================================================//
 SILO_CycObj::~SILO_CycObj(void) { 
@@ -93,7 +98,46 @@ void SILO_CycObj::SetTime(void) {
         }
     }
 }
+//============================================================================//
+void SILO_CycObj::AddFinalZone(int *dims, float **mesh_coords){
+    //increase the dimensions by one
+    this->silodims=dims;
+    this->silodims[2]+=1;
+    //copy the unmodified coordinates over
+    this->silo_mesh[0]=mesh_coords[0];
+    this->silo_mesh[1]=mesh_coords[1];
+    //add the final mesh coordinate in phi
+    this->silo_mesh[2]=new float*[silodims[2]];
+    for(int k=0; k<silodims[2]; k++){
+        //very explicit - make the last coord one increment greater than the previous coord
+        if(k==(silodims-1)){
+            silo_mesh[2][k]=mesh_coords[2][k-1]+(mesh_coords[2][1]-mesh_coords[2][0]);
+        }else{
+            silo_mesh[2][k]=mesh_coords[2][k];
+        }
+    }
+}
+//============================================================================//
+void SILO_CycObj::AddGhostZone(int *dims, float **mesh_coords){
+    //increase the dimensions by one
+    this->silodims=dims;
+    this->silodims[2]+=2*Nghost+1;
+    //copy the unmodified coordinates over
+    this->silo_mesh[0]=mesh_coords[0];
+    this->silo_mesh[1]=mesh_coords[1];
+    //add the final mesh coordinate in phi
+    this->silo_mesh[2]=new float*[silodims[2]];
+    int kshift = silodims[2] - (2*Nghost+1);
+    for(int k=Nghost;k<silodims[2]-Nghost-1;k++){
+        silo_mesh[2][k]=mesh_coords[2][k];
+        if(k<=2*Nghost)
+            silo_mesh[2][k+kshift]=mesh_coords[2][k];
+        if(k>=kshift)
+            silo_mesh[2][k-kshift]=mesh_coords[2][k];
+        
+    }
 
+}
 //============================================================================//
 void SILO_CycObj::Write_SILO(char *silo_path) {
     // Write out the SILO database filename:
@@ -109,8 +153,7 @@ void SILO_CycObj::Write_SILO(char *silo_path) {
     // Open the .silo database file:
     DBfile *dbfile = DBCreate(full_name,DB_CLOBBER,DB_LOCAL,"data",DB_PDB);   
     // Write the mesh to the .silo database:
-    WriteMesh_SILO(dbfile,mesh_name,this->dims,this->mesh_coords,
-                   this->cycle,this->time);    
+    this->WriteMesh_SILO(dbfile,mesh_name);    
     // Write the data to the .silo database:
     for(int m=0; m<nvars; m++) {
         if(this->mask_flags[m]) {
@@ -135,27 +178,11 @@ void SILO_CycObj::Write_ASCII(char *ascii_path) {
 }
 
 //============================================================================//
-void WriteMesh_SILO(DBfile *dbfile, char *mesh_name, int *dims, 
-                    float **mesh_coords, int cycle, double time) {
+void SILO_CycObj:WriteMesh_SILO(DBfile *dbfile, char *mesh_name) {
     int i, j, k, n, Ntot;
-    int Nq = dims[0], Nr = dims[1], Ns = dims[2];
-    float *q = mesh_coords[0], *r = mesh_coords[1], *s = mesh_coords[2];
-    float *s_ghost = NULL;
-    
+    int Nq = silodims[0], Nr = silodims[1], Ns = silodims[2];
+    float *q = silo_mesh[0], *r = msilo_mesh[1], *s = msilo_mesh[2];
 
-    //if halfcyl, just extend array. else ie. periodic, add ghost zones/
-    if(half_cyl){
-         Ns+=1;
-         s_ghost=new float[Ns];
-         //copy array across into new slightly alrger array
-         for(k=0;k<Ns-1;k++){
-                    s_ghost[k]=s[k];
-         }
-         //add final phi=pi point
-         s_ghost[Ns-1]=s_ghost[Ns-2]+s_ghost[1];
-    }else{
-         AddGhostZones_Coord(s,s_ghost,Ns);               
-    }
     Ntot = Nq*Nr*Ns;
     
     float *xg=NULL, *yg=NULL, *zg=NULL;
@@ -163,22 +190,20 @@ void WriteMesh_SILO(DBfile *dbfile, char *mesh_name, int *dims,
     yg = new float[Ntot];
     zg = new float[Ntot];
     
+    //convert to Cartesian. n is ugly, we often use fn() yet, but I haven't rewritten this
     n = 0;
     for(k=0; k<Ns; k++) { 
         for(j=0; j<Nr; j++) {
             for(i=0; i<Nq; i++) {
-                xg[n] = r[j]*cos(s_ghost[k]);
-                yg[n] = r[j]*sin(s_ghost[k]);
+                xg[n] = r[j]*cos(silomesh[2][k]);
+                yg[n] = r[j]*sin(silomesh[2][k]);
                 zg[n] = q[i];
                 n++;
             } 
         }
     }
-    
-    delete [] s_ghost;
-    
-    // Create the arrays to write to the .silo database:
-    int silodims[ndims] = {Nq,Nr,Ns};
+        
+    // Create the arrays to write to the .silo database: (ndims is a global)
     float *coords[ndims] = {(float*)xg, (float*)yg, (float*)zg};
     
     // Create an option list to save cycle and time values:
@@ -207,16 +232,14 @@ void WriteMesh_SILO(DBfile *dbfile, char *mesh_name, int *dims,
 }
 
 //============================================================================//
-void WriteScalar_SILO(DBfile *dbfile, char *vname, char *mesh_name, float *var, 
-                      int *dims) {
+void Silo_CycObj::WriteScalar_SILO(DBfile *dbfile, char *vname, char *mesh_name, float *var){
     // This function writes the data in var to the .silo database file
-    int silodims[ndims] = {dims[0],dims[1],dims[2]+2*Nghost+1};
     float *silovar;
     if(halfcyl){
-          AddFinalZone_Var(var,silovar,dims);              
+          this->AddFinalZone_Var(var,silovar);              
     }else{
           // Add the SILO ghost zones to the data:
-          AddGhostZones_Var(var,silovar,dims);
+          this->AddGhostZones_Var(var,silovar);
     }
     // Remove nonzero elements below a threshold (e.g. 1e-10):
     Set_Zeros(silovar,silodims[0]*silodims[1]*silodims[2]);
@@ -227,59 +250,40 @@ void WriteScalar_SILO(DBfile *dbfile, char *vname, char *mesh_name, float *var,
 }
 
 //============================================================================//
-void WriteVector_SILO(DBfile *dbfile, char *vname, char *mesh_name, 
-                      char **varnames, float **vec, float *s, int* dims) {
+void Silo_CycObj::WriteVector_SILO(DBfile *dbfile, char *vname, char *mesh_name, 
+                      char **varnames, float **vec) {
     // This function writes the data in vec to the .silo database file
     int Ntot;
-    int silodims[ndims] = {dims[0],dims[1],dims[2]+2*Nghost+1};
     float *silovec[ndims];
     if(halfcyl){
-        AddFinalZone_Var(vec[0],silovec[0],dims);
-        AddFinalZone_Var(vec[1],silovec[1],dims);  
-        AddFinalZone_Var(vec[2],silovec[2],dims);  
+        this->AddFinalZone_Var(vec[0],silovec[0],dims);
+        this->AddFinalZone_Var(vec[1],silovec[1],dims);  
+        this->AddFinalZone_Var(vec[2],silovec[2],dims);  
     }else
         // Add the SILO ghost zones to the data:
-        AddGhostZones_Var(vec[0],silovec[0],dims);
-        AddGhostZones_Var(vec[1],silovec[1],dims);
-        AddGhostZones_Var(vec[2],silovec[2],dims);
+        this->AddGhostZones_Var(vec[0],silovec[0],dims);
+        this->AddGhostZones_Var(vec[1],silovec[1],dims);
+        this->AddGhostZones_Var(vec[2],silovec[2],dims);
     }
     // Convert to Cartesian vector components:
-    Cyl_to_Cart(silovec,s,dims);
+    this->Cyl_to_Cart(silovec,silomesh[2],dims);
     // Remove nonzero elements below a threshold (e.g. 1e-10):
-    Ntot = silodims[0]*silodims[1]*silodims[2];
-    Set_Zeros(silovec[0],Ntot);
-    Set_Zeros(silovec[1],Ntot);
-    Set_Zeros(silovec[2],Ntot);
+    this->Ntot = silodims[0]*silodims[1]*silodims[2];
+    this->Set_Zeros(silovec[0],Ntot);
+    this->Set_Zeros(silovec[1],Ntot);
+    this->Set_Zeros(silovec[2],Ntot);
     // Write the vector to the .silo file:
-    DBPutQuadvar(dbfile, vname, mesh_name, ndims, varnames, silovec, silodims,
+    DBPutQuadvar(dbfile, vname, mesh_name, ndims, varnames, silovec, this->silodims,
                  ndims, NULL, 0, DB_FLOAT, DB_NODECENT, NULL);    
     for(int m=0; m<ndims; m++) { delete [] silovec[m]; }
 }
 
 //============================================================================//
-void AddGhostZones_Coord(float *s, float *&s_ghost, int &Ns) {
-    int k, kshift;
-    // Add the ghost zones in phi for mesh continuity:
-    Ns += 2*Nghost + 1;
-    s_ghost = new float[Ns];    
-    kshift = Ns - (2*Nghost+1);
-    for(k=Nghost; k<(Ns-Nghost-1); k++) {
-        s_ghost[k] = s[k-Nghost];
-        // Make periodicity continuous and add upper ghost zones:
-        if(k <= (2*Nghost))
-            s_ghost[k+kshift] = s_ghost[k];
-        // Add lower ghost zones:
-        if(k >= (Ns-(2*Nghost+1)))
-            s_ghost[k-kshift] = s_ghost[k];
-    }
-}
-
-//============================================================================//
-void AddGhostZones_Var(float *var, float *&silovar, int *dims) {
+void SiloCycObj::AddGhostZones_Var(float *var, float *&silovar) {
     // Add the SILO ghost zones (in phi) to the variable
     int nshift, Ntot, n;
-    int Nq = dims[0], Nr = dims[1], Ns = dims[2] + 2*Nghost + 1;
-    
+    int Nq = silodims[0], Nr = silodims[1], Ns = silodims[2]
+   
     Ntot = Nq*Nr*Ns;
     silovar = new float[Ntot];
     nshift = Ntot - (2*Nghost+1)*Nq*Nr;
@@ -301,25 +305,22 @@ void AddGhostZones_Var(float *var, float *&silovar, int *dims) {
 }
 
 //============================================================================//
-void AddFinalZone_Var(float *var, float *&silovar, int *dims) {
+void SiloCycObj::AddFinalZone_Var(float *var, float *&silovar) {
     // Add the SILO ghost zones (in phi) to the variable
     int nshift, Ntot, n;
-    int Nq = dims[0], Nr = dims[1], Ns = dims[2] + 2*Nghost + 1;
+    int Nq = silodims[0], Nr = silodims[1], Ns = silodims[2]
     
     Ntot = Nq*Nr*Ns;
     silovar = new float[Ntot];
-    nshift = Ntot - (2*Nghost+1)*Nq*Nr;
-    n = Nghost*Nq*Nr;
-    for(int k=Nghost; k<(Ns-Nghost-1); k++) {
+    nshift = Ntot - Nq*Nr;
+    n = 0;
+    for(int k=0; k<Ns-1; k++) {
         for(int j=0; j<Nr; j++) {
             for(int i=0; i<Nq; i++) {
-                silovar[n] = var[n-Nghost*Nq*Nr]; 
-                // Continuous periodicity/ghost zones at top of mesh:
-                if(k < (2*Nghost+1))
+                silovar[n] = var[n]; 
+                // Copy variables from phi=0 to phi=pi
+                if(k ==0)
                     silovar[n+nshift] = silovar[n];
-                // Ghost zones at the bottom of the mesh:
-                if(k >= (Ns-(2*Nghost+1)))
-                    silovar[n-nshift] = silovar[n];
                 n++;                
             }
         }
@@ -327,7 +328,7 @@ void AddFinalZone_Var(float *var, float *&silovar, int *dims) {
 }
 
 //============================================================================//
-void Cyl_to_Cart(float **vec, float *s, int *dims) {
+void Silo_CycObj::Cyl_to_Cart(float **vec, float *s, int *dims) {
     // Add functionality comment here
     int i, j, k, n, Ntot;
     int Nq = dims[0], Nr = dims[1], Ns = dims[2];
@@ -378,7 +379,7 @@ void Cyl_to_Cart(float **vec, float *s, int *dims) {
 }
 
 //============================================================================//
-void Set_Zeros(float *var, int Ntot) {
+void Silo_CycObj::Set_Zeros(float *var, int Ntot) {
     float dum;
     for(int n=0; n<Ntot; n++) {
         if(var[n] < 0)
