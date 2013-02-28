@@ -34,8 +34,8 @@ HDO = HYM_DataObj
 SCO = SILO_CycObj
 InterF  = Interp_Functions
 IntegF  = Integ_Functions
-SOBJ = $(BF).o $(SW).o $(AW).o $(HDO).o $(SCO).o
-POBJ = $(BF).o $(SR).o $(SW).o $(InterF).o $(IntegF).o
+SOBJ = $(BF).o $(AW).o $(HDO).o $(SCO).o
+POBJ = $(BF).o $(SR).o $(InterF).o $(IntegF).o
 
 F3D = HYM_SILO
 FP  = Probe_SILO
