@@ -375,28 +375,30 @@ HYMVectorObj::HYMVectorObj(char vchar, char* data_path, char * fname_src,
 
 //============================================================================//
 //============================================================================//
-void HYMVectorObj::WriteData_SILO(DBfile *dbfile, int cycle,
-                                  char *mesh_name, float **mesh_coords) {
-    float *vec[ndims];
-    this->ReadVector_Binary(cycle,vec);
-    WriteVector_SILO(dbfile,this->varname,mesh_name,this->varnames,vec,
-                     mesh_coords[2],this->dims);
-    for(int m=0; m<ndims; m++)
-        delete [] vec[m];
-}
-
-//============================================================================//
-void HYMVectorObj::WriteData_ASCII(char *ascii_path, int cycle, double time, 
-                                   float **mesh_coords) {
-    char fname_ascii[1001];
-    sprintf(fname_ascii,"%s_%03d.dat",this->ascii_name,cycle);
-    float *vec[ndims];
-    this->ReadVector_Binary(cycle,vec);
-    WriteVector_ASCII(ascii_path,fname_ascii,this->vchar,this->dims,   
-                      mesh_coords,time,vec,this->stopmsg);
-    for(int m=0; m<ndims; m++)
-        delete [] vec[m];
-}
+//These functions used to be used to write silo databases from inside the HYM data object.
+//This functionality (almost exactly) can now be found inside Silo Cyc Obj.
+//void HYMVectorObj::WriteData_SILO(DBfile *dbfile, int cycle,
+//                                  char *mesh_name, float **mesh_coords) {
+//    float *vec[ndims];
+//    this->ReadVector_Binary(cycle,vec);
+//    WriteVector_SILO(dbfile,this->varname,mesh_name,this->varnames,vec,
+//                     mesh_coords[2],this->dims);
+//    for(int m=0; m<ndims; m++)
+//        delete [] vec[m];
+//}
+//
+////============================================================================//
+//void HYMVectorObj::WriteData_ASCII(char *ascii_path, int cycle, double time, 
+//                                   float **mesh_coords) {
+//    char fname_ascii[1001];
+//    sprintf(fname_ascii,"%s_%03d.dat",this->ascii_name,cycle);
+//    float *vec[ndims];
+//    this->ReadVector_Binary(cycle,vec);
+//    WriteVector_ASCII(ascii_path,fname_ascii,this->vchar,this->dims,   
+//                      mesh_coords,time,vec,this->stopmsg);
+//    for(int m=0; m<ndims; m++)
+//        delete [] vec[m];
+//}
 
 //============================================================================//
 void HYMVectorObj::ReadVector_Binary(int cycle, float **vec) {
