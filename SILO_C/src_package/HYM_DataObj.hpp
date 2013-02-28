@@ -14,6 +14,7 @@ Header file for HYM scalar and vector data objects.
 class HYMDataObj {
     public:
         char vchar;          // Single character name of the variable
+        char id;             //vector or scalar
         int Ncyc;            // Number of cycles in the source data
         bool *cycle_mask;    // Mask of cycles where the data exists
         double *times;       // Vector with the simulation time for each cycle
@@ -39,6 +40,7 @@ class HYMDataObj {
         static void ReadMesh_Binary(char*,char*,int*,float**,char*);
         virtual void WriteData_SILO(DBfile*,int,char*,float**) = 0;
         virtual void WriteData_ASCII(char*,int,double,float**) = 0;
+        virtual void GetData_SILO(int, float*&)=0;
         
     protected:
         static void StripGhostCoords(double*,float*&,int,int,int);
@@ -56,6 +58,7 @@ class HYMScalarObj : public HYMDataObj {
         HYMScalarObj(char,char*,char*,int*,char*);
         void WriteData_SILO(DBfile*,int,char*,float**);
         void WriteData_ASCII(char*,int,double,float**);
+        void GetData_SILO(int, float*&);
         void ReadScalar_Binary(int,float*&);
 };
 
@@ -65,8 +68,9 @@ class HYMVectorObj : public HYMDataObj {
         char *varnames[ndims];
 
     public:
-        HYMVectorObj(char,char*,char*,int*,char*);
+        void HYMVectorObj(char,char*,char*,int*,char*);
         void WriteData_SILO(DBfile*,int,char*,float**);
+        void GetData_SILO(int, float**&);
         void WriteData_ASCII(char*,int,double,float**);
         void ReadVector_Binary(int,float**);
 };

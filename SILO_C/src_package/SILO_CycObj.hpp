@@ -31,7 +31,7 @@ class SILO_CycObj {
         SILO_CycObj(int,float**,int*,HYMDataObj**,bool*,char*);
         ~SILO_CycObj(void);
         void Write_SILO(char*);
-        void Write_ASCII(char*);
+        void Write_ASCII(char*, float **);
         
     protected:
         static void StripGhostCoords(double*,float*&,int,int,int);
@@ -43,8 +43,6 @@ class SILO_CycObj {
         void WriteMesh_SILO(DBfile*);
         void WriteScalar_SILO(DBfile*,char*,float*);
         void WriteVector_SILO(DBfile*,char*,char**,float**);
-        void WriteData_SILO(HYMScalarObj*);
-        void WriteData_SILO(HYMVectorObj*);
         void AddGhostZones_Var(float*,float*&);
         void AddFinalZone_Var(float*,float*&);
         void Cyl_to_Cart(float**);

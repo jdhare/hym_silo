@@ -156,28 +156,26 @@ void SILO_CycObj::Write_SILO(char *silo_path) {
     // Write the data to the .silo database:
     for(int m=0; m<nvars; m++) {
         if(this->mask_flags[m]) {
-            this->WriteData_SILO(this->data_objs[m], dbfile);
+            if(data_objs[m]->id=='S'){
+                //scalar stuff
+                float* vars=NULL;
+                data_objs[m]->GetData_SILO(this->cycle,&vars);
+                this->WriteScalar_SILO(dbfile,data_objs[m]->varname,*vars);
+                delete vars;
+            }
+            if(data_objs[m]->id=='V'){
+                //vector stuff
+                float** vecs=NULL;
+                data_objs[m]->GetData_SILO(this->cycle,&vecs);
+                this->WriteVector_SILO(dbfile,data_objs[m]->varname,data_objs[m]->varnames,vecs);
+                for(int m=0; m<ndims; m++)
+                    delete [] vecs[m];
+            }
         }
     }
     // Close the completed .silo database:
     DBClose(dbfile);
     cout << "      Output:  " << full_name << "\n";    
-}
-//============================================================================//     
-void SILO_CycObj::WriteData_SILO(HYMVectorObj* data_obj, DBfile* dbfile){
-    float *vec[ndims];
-    data_obj->ReadVector_Binary(this->cycle,vec);
-    this->WriteVector_SILO(dbfile, data_obj->varname,
-                      data_obj->varnames, vec);
-    for(int m=0; m<ndims; m++)
-        delete [] vec[m];
-}
-//============================================================================//     
-void SILO_CycObj::WriteData_SILO(HYMScalarObj* data_obj, DBfile* dbfile){
-    float *var;
-    data_obj->ReadScalar_Binary(this->cycle,var);
-    this->WriteScalar_SILO(dbfile,data_obj->varname,var);
-    delete [] var;
 }
 //============================================================================//
 void SILO_CycObj::Write_ASCII(char *ascii_path, float **mesh_coords) {
@@ -185,7 +183,7 @@ void SILO_CycObj::Write_ASCII(char *ascii_path, float **mesh_coords) {
     for(int m=0; m<nvars; m++) {
         if(this-mask_flags[m]) {
             this->data_objs[m]->WriteData_ASCII(ascii_path,this->cycle,
-                                                this->time,*mesh_coords);
+                                                this->time,**mesh_coords);
         }
     }                 
 }
@@ -208,8 +206,8 @@ void SILO_CycObj::WriteMesh_SILO(DBfile *dbfile) {
     for(k=0; k<Ns; k++) { 
         for(j=0; j<Nr; j++) {
             for(i=0; i<Nq; i++) {
-                xg[n] = r[j]*cos(silo_mesh[2][k]);
-                yg[n] = r[j]*sin(silo_mesh[2][k]);
+                xg[n] = r[j]*cos(s[k]);
+                yg[n] = r[j]*sin(s[k]);
                 zg[n] = q[i];
                 n++;
             } 
@@ -321,7 +319,7 @@ void SILO_CycObj::AddGhostZones_Var(float *var, float *&silovar) {
 void SILO_CycObj::AddFinalZone_Var(float *var, float *&silovar) {
     // Add the SILO ghost zones (in phi) to the variable
     int nshift, Ntot, n;
-    int Nq = silodims[0], Nr = silodims[1], Ns = silodims[2]
+    int Nq = silodims[0], Nr = silodims[1], Ns = silodims[2];
     
     Ntot = Nq*Nr*Ns;
     silovar = new float[Ntot];
