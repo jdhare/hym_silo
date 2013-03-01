@@ -156,14 +156,14 @@ void SILO_CycObj::Write_SILO(char *silo_path) {
     // Write the data to the .silo database:
     for(int m=0; m<nvars; m++) {
         if(this->mask_flags[m]) {
-            if(data_objs[m]->id=='S'){
+            if(data_objs[m]->nvals==1){
                 //scalar stuff
                 float *vars;
                 data_objs[m]->GetData_SILO(this->cycle,vars);
                 this->WriteScalar_SILO(dbfile,data_objs[m]->varname,vars);
                 delete vars;
             }
-            if(data_objs[m]->id=='V'){
+            if(data_objs[m]->nvals==3){
                 //vector stuff
                 float *vecs[ndims];
                 data_objs[m]->GetData_SILO(this->cycle,vecs);

@@ -291,7 +291,6 @@ HYMScalarObj::HYMScalarObj(char vchar, char* data_path, char * fname_src,
                            int *dims, char* stopmsg) :
               HYMDataObj(vchar,data_path,fname_src,dims,stopmsg,1) 
 {
-    this->id='S';//scalar
     if(vchar == 'p') {
         this->varname = "pressure";
         this->ascii_name = "p3out";
@@ -349,7 +348,6 @@ HYMVectorObj::HYMVectorObj(char vchar, char* data_path, char * fname_src,
                            int *dims, char* stopmsg) :
               HYMDataObj(vchar,data_path,fname_src,dims,stopmsg,3) 
 {
-    this->id='V';//vector
     if(vchar == 'B') {
         this->varname = "b_field";
         this->varnames[0] = "B_x"; 
@@ -381,7 +379,7 @@ HYMVectorObj::HYMVectorObj(char vchar, char* data_path, char * fname_src,
 }
 
 //============================================================================//
- void HYMVectorObj::GetData_SILO(int cycle, float **vecs){
+ void HYMVectorObj::GetData_SILO(int cycle, float **&vecs){
      this->ReadVector_Binary(cycle, vecs);
  }
 //============================================================================//

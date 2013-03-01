@@ -14,7 +14,7 @@ Header file for HYM scalar and vector data objects.
 class HYMDataObj {
     public:
         char vchar;          // Single character name of the variable
-        char id;             //vector or scalar
+        int nvals;           // 1 for scalar, 3 for vector
         int Ncyc;            // Number of cycles in the source data
         bool *cycle_mask;    // Mask of cycles where the data exists
         double *times;       // Vector with the simulation time for each cycle
@@ -26,7 +26,6 @@ class HYMDataObj {
         char *data_path;     // Path to source data
         char *fname_src;     // Name of source file
         char *data_type;     // Type of data in source ("scalar" or "vector")
-        int nvals;           // 1 for scalar, 3 for vector
         int *dims;           // Dimensions of mesh for SILO output
         int Ntot;            // Product of dims elements
         int dims_in[ndims];  // Dimensions of source mesh (with HYM ghost zones)
@@ -60,6 +59,8 @@ class HYMScalarObj : public HYMDataObj {
         void WriteData_SILO(DBfile*,int,char*,float**);
         void WriteData_ASCII(char*,int,double,float**);
         void GetData_SILO(int, float*&);
+        
+    protected:
         void ReadScalar_Binary(int,float*&);
 };
 
@@ -68,8 +69,9 @@ class HYMVectorObj : public HYMDataObj {
     public:
         HYMVectorObj(char,char*,char*,int*,char*);
         void WriteData_SILO(DBfile*,int,char*,float**);
-        void GetData_SILO(int, float**);
+        void GetData_SILO(int, float**&);
         void WriteData_ASCII(char*,int,double,float**);
+    protected:
         void ReadVector_Binary(int,float**);
 };
 
