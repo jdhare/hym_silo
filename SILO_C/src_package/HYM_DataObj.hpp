@@ -19,6 +19,7 @@ class HYMDataObj {
         bool *cycle_mask;    // Mask of cycles where the data exists
         double *times;       // Vector with the simulation time for each cycle
         char *varname;       // String name of variable (for SILO/VisIt)
+        char *varnames[ndims]; //detailed names of each vector component. Only necessary for the vector child
 
     protected:
         ifstream file;       // Source file object
@@ -64,9 +65,6 @@ class HYMScalarObj : public HYMDataObj {
 
 //============================================================================//
 class HYMVectorObj : public HYMDataObj {
-    public:
-        char *varnames[ndims];
-
     public:
         HYMVectorObj(char,char*,char*,int*,char*);
         void WriteData_SILO(DBfile*,int,char*,float**);
