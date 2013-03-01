@@ -313,17 +313,6 @@ HYMScalarObj::HYMScalarObj(char vchar, char* data_path, char * fname_src,
          this->PositionPointer_Binary(cycle);
          this->ReadVar_Binary(var[0]);
  }
-//These functions used to be used to write silo databases from inside the HYM data object.
-//This functionality (almost exactly) can now be found inside Silo Cyc Obj.
-////============================================================================//
-//void HYMScalarObj::WriteData_SILO(DBfile *dbfile, int cycle, char *mesh_name,
-//                                  float **mesh_coords) {
-//    float *var;
-//    this->ReadScalar_Binary(cycle,var);
-//    WriteScalar_SILO(dbfile,this->varname,mesh_name,var,this->dims);
-//    delete [] var;
-//}
-
 //============================================================================//
 void HYMScalarObj::WriteData_ASCII(char *ascii_path, int cycle, double tout, 
                                    float **mesh_coords) {
@@ -386,19 +375,6 @@ HYMVectorObj::HYMVectorObj(char vchar, char* data_path, char * fname_src,
     this->ReadVar_Binary(vecs[1]);
     this->ReadVar_Binary(vecs[2]);
  }
-//============================================================================//
-//These functions used to be used to write silo databases from inside the HYM data object.
-//This functionality (almost exactly) can now be found inside Silo Cyc Obj.
-//void HYMVectorObj::WriteData_SILO(DBfile *dbfile, int cycle,
-//                                  char *mesh_name, float **mesh_coords) {
-//    float *vec[ndims];
-//    this->ReadVector_Binary(cycle,vec);
-//    WriteVector_SILO(dbfile,this->varname,mesh_name,this->varnames,vec,
-//                     mesh_coords[2],this->dims);
-//    for(int m=0; m<ndims; m++)
-//        delete [] vec[m];
-//}
-//
 //============================================================================//
 void HYMVectorObj::WriteData_ASCII(char *ascii_path, int cycle, double time, 
                                    float **mesh_coords) {
