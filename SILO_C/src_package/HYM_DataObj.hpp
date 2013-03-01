@@ -36,7 +36,7 @@ class HYMDataObj {
 
     public:
         HYMDataObj(char,char*,char*,int*,char*,int);
-        ~HYMDataObj(void);
+        virtual ~HYMDataObj(void);
         static void ReadMesh_Binary(char*,char*,int*,float**,char*);
         virtual void WriteData_SILO(DBfile*,int,char*,float**) = 0;
         virtual void WriteData_ASCII(char*,int,double,float**) = 0;
