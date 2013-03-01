@@ -159,14 +159,14 @@ void SILO_CycObj::Write_SILO(char *silo_path) {
             if(data_objs[m]->id=='S'){
                 //scalar stuff
                 float *vars;
-                data_objs[m]->GetData_SILO(this->cycle,&vars);
+                data_objs[m]->GetData_SILO(this->cycle,vars);
                 this->WriteScalar_SILO(dbfile,data_objs[m]->varname,vars);
                 delete vars;
             }
             if(data_objs[m]->id=='V'){
                 //vector stuff
                 float *vecs[ndims];
-                data_objs[m]->GetData_SILO(this->cycle,&vecs);
+                data_objs[m]->GetData_SILO(this->cycle,vecs);
                 this->WriteVector_SILO(dbfile,data_objs[m]->varname,data_objs[m]->varnames,vecs);
                 for(int m=0; m<ndims; m++)
                     delete [] vecs[m];
