@@ -382,9 +382,9 @@ HYMVectorObj::HYMVectorObj(char vchar, char* data_path, char * fname_src,
 //============================================================================//
  void HYMVectorObj::GetData_SILO(int cycle, float **vecs){
     this->PositionPointer_Binary(cycle);
-    this->ReadVar_Binary(vec[0]);
-    this->ReadVar_Binary(vec[1]);
-    this->ReadVar_Binary(vec[2]);
+    this->ReadVar_Binary(vecs[0]);
+    this->ReadVar_Binary(vecs[1]);
+    this->ReadVar_Binary(vecs[2]);
  }
 //============================================================================//
 //These functions used to be used to write silo databases from inside the HYM data object.
