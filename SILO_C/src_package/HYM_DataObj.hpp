@@ -69,7 +69,7 @@ class HYMVectorObj : public HYMDataObj {
     public:
         HYMVectorObj(char,char*,char*,int*,char*);
         void WriteData_SILO(DBfile*,int,char*,float**);
-        void GetData_SILO(int, float**&);
+        void GetData_SILO(int, float**);
         void WriteData_ASCII(char*,int,double,float**);
     protected:
         void ReadVector_Binary(int,float**);
