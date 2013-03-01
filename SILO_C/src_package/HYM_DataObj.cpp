@@ -379,7 +379,7 @@ HYMVectorObj::HYMVectorObj(char vchar, char* data_path, char * fname_src,
 }
 
 //============================================================================//
- void HYMVectorObj::GetData_SILO(int cycle, float **&vecs){
+ void HYMVectorObj::GetData_SILO(int cycle, float **vecs){
      this->ReadVector_Binary(cycle, vecs);
  }
 //============================================================================//
