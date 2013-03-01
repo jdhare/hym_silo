@@ -38,7 +38,6 @@ class HYMDataObj {
         HYMDataObj(char,char*,char*,int*,char*,int);
         virtual ~HYMDataObj(void);
         static void ReadMesh_Binary(char*,char*,int*,float**,char*);
-        //virtual void WriteData_SILO(DBfile*,int,char*,float**) = 0;
         virtual void WriteData_ASCII(char*,int,double,float**) = 0;
         virtual void GetData_SILO(int, float**)=0;
         
@@ -56,7 +55,6 @@ class HYMDataObj {
 class HYMScalarObj : public HYMDataObj {
     public:
         HYMScalarObj(char,char*,char*,int*,char*);
-        void WriteData_SILO(DBfile*,int,char*,float**);
         void WriteData_ASCII(char*,int,double,float**);
         void GetData_SILO(int, float**);
         
@@ -68,7 +66,6 @@ class HYMScalarObj : public HYMDataObj {
 class HYMVectorObj : public HYMDataObj {
     public:
         HYMVectorObj(char,char*,char*,int*,char*);
-        void WriteData_SILO(DBfile*,int,char*,float**);
         void GetData_SILO(int, float**);
         void WriteData_ASCII(char*,int,double,float**);
     protected:
