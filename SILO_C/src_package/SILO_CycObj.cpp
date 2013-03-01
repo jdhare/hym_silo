@@ -166,8 +166,8 @@ void SILO_CycObj::Write_SILO(char *silo_path) {
             if(data_objs[m]->nvals==3){
                 //vector stuff
                 float** vec=new float*[ndims];
-                data_objs[m]->GetData_SILO(this->cycle,vec);
-                this->WriteVector_SILO(dbfile,data_objs[m]->varname,data_objs[m]->varnames,vec);
+                data_objs[m]->GetData_SILO(this->cycle,vecs);
+                this->WriteVector_SILO(dbfile,data_objs[m]->varname,data_objs[m]->varnames,vecs);
                 for(int m=0; m<ndims; m++)
                     delete [] vecs[m];
             }
