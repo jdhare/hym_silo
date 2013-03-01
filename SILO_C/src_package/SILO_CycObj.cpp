@@ -160,12 +160,12 @@ void SILO_CycObj::Write_SILO(char *silo_path) {
                 //scalar stuff
                 float* vars=new float[silodims[0]*silodims[1]*silodims[2]];
                 data_objs[m]->GetData_SILO(this->cycle,vars);
-                this->WriteScalar_SILO(dbfile,data_objs[m]->varname,*vars);
+                this->WriteScalar_SILO(dbfile,data_objs[m]->varname,vars);
                 delete vars;
             }
             if(data_objs[m]->id=='V'){
                 //vector stuff
-                float** vecs=new float*[ndims]
+                float** vecs=new float*[ndims];
                 data_objs[m]->GetData_SILO(this->cycle,vecs);
                 this->WriteVector_SILO(dbfile,data_objs[m]->varname,data_objs[m]->varnames,vecs);
                 for(int m=0; m<ndims; m++)
@@ -183,7 +183,7 @@ void SILO_CycObj::Write_ASCII(char *ascii_path, float **mesh_coords) {
     for(int m=0; m<nvars; m++) {
         if(this-mask_flags[m]) {
             this->data_objs[m]->WriteData_ASCII(ascii_path,this->cycle,
-                                                this->time,**mesh_coords);
+                                                this->time,mesh_coords);
         }
     }                 
 }
