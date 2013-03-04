@@ -53,7 +53,8 @@ int main(int argc, char *argv[]) {
     float *mesh_coords[ndims] = {NULL,NULL,NULL};
     char *data_path=NULL, *silo_path=NULL;
     bool data_flags[nvars], report_flag;
-    cout << "The code begins.\n";
+    sprintf(str,"begins");
+    cout << "The Code " << str;
     
     
     //------------------------------------------------------------------------//
