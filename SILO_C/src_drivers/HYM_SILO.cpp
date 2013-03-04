@@ -53,13 +53,14 @@ int main(int argc, char *argv[]) {
     float *mesh_coords[ndims] = {NULL,NULL,NULL};
     char *data_path=NULL, *silo_path=NULL;
     bool data_flags[nvars], report_flag;
+    cout << "The code begins.\n";
+    
     
     //------------------------------------------------------------------------//
     // Process the basic run parameters and read in the mesh:
     ReadArgs(argc,argv,data_path,silo_path,cycle,data_flags);
     ReadStatData(data_path,Ncyc,dims);
     HYMDataObj::ReadMesh_Binary(data_path,fname_mesh,dims,mesh_coords,stopmsg);
-    cout << "Code made it here."<<endl;
     
     // Define and initialize the HYM data objects:
     HYMDataObj *data_objs[nvars];
