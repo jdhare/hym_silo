@@ -139,6 +139,7 @@ void SILO_CycObj::AddGhostZones(int *dims, float **mesh_coords){
 }
 //============================================================================//
 void SILO_CycObj::Write_SILO(char *silo_path) {
+    cout << "Write SILO invoked" <<endl;
     // Write out the SILO database filename:
     char full_name[1001];
     sprintf(full_name,"%s%s_%0.3d.silo",silo_path,silo_name,this->cycle);

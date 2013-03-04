@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="88">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="SILO_C">
+      <df name="src_drivers">
+        <in>HYM_SILO.cpp</in>
+      </df>
+      <df name="src_package">
+        <in>ASCII_Write.cpp</in>
+        <in>Basic_Functions.cpp</in>
+        <in>HYM_DataObj.cpp</in>
+        <in>SILO_CycObj.cpp</in>
+      </df>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>GNU|GNU</compilerSet>
+      </toolsSet>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} silo</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+        </makeTool>
+      </makefileType>
+      <folder path="SILO_C/src_drivers">
+        <ccTool>
+          <incDir>
+            <pElem>../../../../../../global/u2/j/jdhare/hym/HYM_SILO/SILO_C/src_drivers</pElem>
+            <pElem>../../../../../../opt/pgi/12.5.0/linux86-64/12.5/include/CC/stl</pElem>
+            <pElem>/global/u2/j/jdhare/hym/HYM_SILO/SILO_C</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="SILO_C/src_package">
+        <ccTool>
+          <incDir>
+            <pElem>../../../../../../global/u2/j/jdhare/hym/HYM_SILO/SILO_C/src_package</pElem>
+            <pElem>../../../../../../opt/pgi/12.5.0/linux86-64/12.5/include/CC/stl</pElem>
+            <pElem>/global/u2/j/jdhare/hym/HYM_SILO/SILO_C</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <item path="src_drivers/HYM_SILO.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src_package/ASCII_Write.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src_package/Basic_Functions.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src_package/HYM_DataObj.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src_package/SILO_CycObj.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
