@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
     ReadArgs(argc,argv,data_path,silo_path,cycle,data_flags);
     ReadStatData(data_path,Ncyc,dims);
     HYMDataObj::ReadMesh_Binary(data_path,fname_mesh,dims,mesh_coords,stopmsg);
+    cout << "Code made it here."<<endl;
     
     // Define and initialize the HYM data objects:
     HYMDataObj *data_objs[nvars];
@@ -66,10 +67,8 @@ int main(int argc, char *argv[]) {
         data_objs[m] = NULL;
     
     // Use data_flags to determine which data values should be included:
-    if(data_flags[0]){
+    if(data_flags[0])
         data_objs[0] = new HYMScalarObj('p',data_path,"h3ds.d",dims,stopmsg);
-        cout << "Pressure"<<endl;
-    }
     if(data_flags[1])
         data_objs[1] = new HYMScalarObj('n',data_path,"h3ds_ff.d",dims,stopmsg);
     if(data_flags[2])
