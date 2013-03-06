@@ -53,9 +53,6 @@ int main(int argc, char *argv[]) {
     float *mesh_coords[ndims] = {NULL,NULL,NULL};
     char *data_path=NULL, *silo_path=NULL;
     bool data_flags[nvars], report_flag;
-    sprintf(str,"begins");
-    cout << "The Code " << str;
-    
     
     //------------------------------------------------------------------------//
     // Process the basic run parameters and read in the mesh:
