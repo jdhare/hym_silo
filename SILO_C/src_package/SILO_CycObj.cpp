@@ -33,6 +33,7 @@ SILO_CycObj::SILO_CycObj(int cycle, float **mesh_coords, int *dims,
     this->data_objs = data_objs;
     this->stopmsg=stopmsg;
     this->silo_mesh=new float*[3];
+    this->silodims=new int[3];
     
     this->time_str=NULL;
     this->stat_str="Clean";
@@ -100,8 +101,9 @@ void SILO_CycObj::SetTime(void) {
 //============================================================================//
 void SILO_CycObj::AddFinalZone(int *dims, float **mesh_coords){
     //increase the dimensions by one
-    this->silodims=dims;
-    this->silodims[2]+=1;
+    this->silodims[0]=dims[0];
+    this->silodims[1]=dims[1];
+    this->silodims[2]=dims[2]+1;
     //copy the unmodified coordinates over
     this->silo_mesh[0]=mesh_coords[0];
     this->silo_mesh[1]=mesh_coords[1];
@@ -139,7 +141,6 @@ void SILO_CycObj::AddGhostZones(int *dims, float **mesh_coords){
 }
 //============================================================================//
 void SILO_CycObj::Write_SILO(char *silo_path) {
-    cout << "Write SILO invoked" <<endl;
     // Write out the SILO database filename:
     char full_name[1001];
     sprintf(full_name,"%s%s_%0.3d.silo",silo_path,silo_name,this->cycle);
@@ -199,7 +200,7 @@ void SILO_CycObj::WriteMesh_SILO(DBfile *dbfile) {
     
     //convert to Cartesian. n is ugly, we often use fn() yet, but I haven't rewritten this
     n = 0;
-    for(k=0; k<Ns; k++) { 
+    for(k=0; k<Ns; k++) {
         for(j=0; j<Nr; j++) {
             for(i=0; i<Nq; i++) {
                 xg[n] = r[j]*cos(s[k]);

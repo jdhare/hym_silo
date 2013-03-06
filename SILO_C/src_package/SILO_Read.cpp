@@ -29,8 +29,12 @@ void ReadScalar_SILO(char *path, char *fname, char *varname, float *&var,
     OpenFile_SILO(path,fname,dbfile,stopmsg);
     
     DBquadvar *dbvar=NULL;
-    GetVar_SILO(dbfile,varname,dbvar,"scalar",dims,stopmsg);        
-    StripVar_SILO(dbvar,var,dims,0);
+    GetVar_SILO(dbfile,varname,dbvar,"scalar",dims,stopmsg);
+    
+    //No Ghost zones in the half cylindrical case
+    if(!half_cyl){
+        StripVar_SILO(dbvar,var,dims,0);
+    }
      
     DBFreeQuadvar(dbvar);
     DBClose(dbfile);

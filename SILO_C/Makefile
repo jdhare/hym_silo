@@ -43,6 +43,7 @@ SMD = SILO_Mode_Data
 RCC = SILO_mode_data_RCC
 SM2 = SILO_mode_data_v2
 GJV = Get_Jmax_vmax_n0
+GFH = Get_FR_height_P
 
 $(BF).o: $(SRCPKG)/$(BF).cpp 
 	$(CXX) $(INC) -c $(SRCPKG)/$(BF).cpp
@@ -83,6 +84,8 @@ modes2: $(POBJ)
 #	./$(SM2).exe $(PDIR)/RunData_CounterH/2011_01_21_ct_HR/SILO/ $(PDIR)/RunData_CounterH/2011_01_21_ct_HR/SILO_mode_data_profiles/ 0
 getmax: $(POBJ)
 	$(CXX) $(POBJ) $(INC) -o $(GJV)_w_mins.exe $(SRCDRV)/$(GJV).cpp
+getheight: $(POBJ)
+	$(CXX) $(POBJ) $(INC) -o $(GFH).exe $(SRCDRV)/$(GFH).cpp
 
 clean:
 	rm *.o *.exe
