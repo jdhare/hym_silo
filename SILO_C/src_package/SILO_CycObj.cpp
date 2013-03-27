@@ -110,8 +110,8 @@ void SILO_CycObj::AddFinalZone(int *dims, float **mesh_coords){
     //add the final mesh coordinate in phi
     this->silo_mesh[2]=new float[silodims[2]];
     for(int k=0; k<silodims[2]; k++){
-        //very explicit - make the last coord one increment greater than the previous coord
         if(k==(silodims[2]-1)){
+            //very explicit - make the last coord one increment greater than the previous coord
             silo_mesh[2][k]=mesh_coords[2][k-1]+(mesh_coords[2][1]-mesh_coords[2][0]);
         }else{
             silo_mesh[2][k]=mesh_coords[2][k];
@@ -243,12 +243,14 @@ void SILO_CycObj::WriteMesh_SILO(DBfile *dbfile) {
 void SILO_CycObj::WriteScalar_SILO(DBfile *dbfile, char *vname, float *var){
     // This function writes the data in var to the .silo database file
     float *silovar;
+    cout << silodims[2] <<endl;
     if(half_cyl){
           this->AddFinalZone_Var(var,silovar);              
     }else{
           // Add the SILO ghost zones to the data:
           this->AddGhostZones_Var(var,silovar);
     }
+    
     // Remove nonzero elements below a threshold (e.g. 1e-10):
     Set_Zeros(silovar,silodims[0]*silodims[1]*silodims[2]);
     // Write the data to the .silo file:
